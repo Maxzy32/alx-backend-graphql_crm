@@ -160,6 +160,10 @@ from graphene_django import DjangoObjectType
 from django.db import transaction
 from django.core.exceptions import ValidationError
 from .models import Customer, Product, Order
+from graphene_django.filter import DjangoFilterConnectionField
+from .filters import CustomerFilter, ProductFilter, OrderFilter
+
+
 
 
 # ---------- GraphQL Types ----------
@@ -345,3 +349,53 @@ class Query(graphene.ObjectType):
 
     def resolve_all_orders(root, info):
         return Order.objects.all()
+
+
+# ---------- GraphQL Types ----------
+class CustomerType(DjangoObjectType):
+    class Meta:
+        model = Customer
+        filterset_class = CustomerFilter
+        interfaces = (graphene.relay.Node,)
+
+
+class ProductType(DjangoObjectType):
+    class Meta:
+        model = Product
+        filterset_class = ProductFilter
+        interfaces = (graphene.relay.Node,)
+
+
+class OrderType(DjangoObjectType):
+    class Meta:
+        model = Order
+        filterset_class = OrderFilter
+        interfaces = (graphene.relay.Node,)
+
+
+# ---------- Query ----------
+class Query(graphene.ObjectType):
+    hello = graphene.String(default_value="Hello, GraphQL!")
+
+    # Filtered lists
+    all_customers = DjangoFilterConnectionField(CustomerType, order_by=graphene.List(of_type=graphene.String))
+    all_products = DjangoFilterConnectionField(ProductType, order_by=graphene.List(of_type=graphene.String))
+    all_orders = DjangoFilterConnectionField(OrderType, order_by=graphene.List(of_type=graphene.String))
+
+    def resolve_all_customers(root, info, order_by=None, **kwargs):
+        qs = Customer.objects.all()
+        if order_by:
+            qs = qs.order_by(*order_by)
+        return qs
+
+    def resolve_all_products(root, info, order_by=None, **kwargs):
+        qs = Product.objects.all()
+        if order_by:
+            qs = qs.order_by(*order_by)
+        return qs
+
+    def resolve_all_orders(root, info, order_by=None, **kwargs):
+        qs = Order.objects.all()
+        if order_by:
+            qs = qs.order_by(*order_by)
+        return qs
