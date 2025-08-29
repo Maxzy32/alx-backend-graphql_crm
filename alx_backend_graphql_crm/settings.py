@@ -44,6 +44,9 @@ INSTALLED_APPS = [
     # Local
     "crm",
      "django_filters",
+
+     # other apps...
+    "django_crontab",
 ]
 
 GRAPHENE = {
