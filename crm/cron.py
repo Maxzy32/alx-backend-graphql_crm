@@ -40,6 +40,7 @@ from gql import gql, Client
 from gql.transport.requests import RequestsHTTPTransport
 
 
+
 def log_crm_heartbeat():
     """
     Logs a heartbeat message every 5 minutes.
@@ -77,3 +78,49 @@ def log_crm_heartbeat():
     except Exception as e:
         with open(log_file, "a") as f:
             f.write(f"{now} Error querying GraphQL: {e}\n")
+
+
+def update_low_stock():
+    """
+    Runs GraphQL mutation to restock products with stock < 10
+    and logs updates.
+    """
+    log_file = "/tmp/low_stock_updates_log.txt"
+    now = datetime.now().strftime("%d/%m/%Y-%H:%M:%S")
+
+    try:
+        # Setup GraphQL client
+        transport = RequestsHTTPTransport(
+            url="http://localhost:8000/graphql",
+            verify=False,
+            retries=3,
+        )
+        client = Client(transport=transport, fetch_schema_from_transport=True)
+
+        # GraphQL mutation
+        mutation = gql(
+            """
+            mutation {
+                updateLowStockProducts {
+                    message
+                    updatedProducts {
+                        id
+                        name
+                        stock
+                    }
+                }
+            }
+            """
+        )
+
+        result = client.execute(mutation)
+        data = result.get("updateLowStockProducts", {})
+
+        with open(log_file, "a") as f:
+            f.write(f"{now} {data.get('message')}\n")
+            for p in data.get("updatedProducts", []):
+                f.write(f"{now} Updated {p['name']} → stock: {p['stock']}\n")
+
+    except Exception as e:
+        with open(log_file, "a") as f:
+            f.write(f"{now} Error updating stock: {e}\n")
