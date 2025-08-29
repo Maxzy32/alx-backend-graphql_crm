@@ -164,6 +164,8 @@ from graphene_django.filter import DjangoFilterConnectionField
 from .filters import CustomerFilter, ProductFilter, OrderFilter
 from gql import gql, Client
 from gql.transport.requests import RequestsHTTPTransport
+from crm.models import Product   # ✅ required import
+
 
 
 
