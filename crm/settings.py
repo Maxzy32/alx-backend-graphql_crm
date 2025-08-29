@@ -1,6 +1,8 @@
 INSTALLED_APPS = [
     # other apps...
     "django_crontab",
+    # other apps...
+    "django_celery_beat",
 ]
 
 
