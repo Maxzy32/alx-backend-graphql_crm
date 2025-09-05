@@ -23,9 +23,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-=2hl_ju)3cv(u20v!_ls27y*s+w(=p&mw+l(n#e(t#+yrhr0$&'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# DEBUG = True
 
-ALLOWED_HOSTS = []
+# ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -128,7 +128,17 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
+DEBUG = False
+ALLOWED_HOSTS = ["alx_backend_graphql_crm.onrender.com"]  # Replace with your Render domain
+
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
+# Security headers (optional but recommended)
+CSRF_TRUSTED_ORIGINS = ["https://your-app-name.onrender.com"]
+
+
+# STATIC_URL = 'static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
